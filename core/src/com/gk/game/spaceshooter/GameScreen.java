@@ -1,5 +1,7 @@
 package com.gk.game.spaceshooter;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -53,17 +55,36 @@ class GameScreen implements Screen {
         batch.begin();
 
         if (Y + HEIGHT <= 0) {
-            Y=0;
-        }else {
-            Y -= background.getRegionHeight()/10;
+            Y = 0;
+        } else {
+            Y -= background.getRegionHeight() / 10;
         }
 
         batch.draw(background, X, Y, WIDTH, HEIGHT);
         batch.draw(background, X, Y + HEIGHT, WIDTH, HEIGHT);
 
+        updateShipMovement(ship);
         ship.draw(batch);
 
         batch.end();
+    }
+
+    private void updateShipMovement(Ship ship) {
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            ship.moveY(ship.getShipY() + 5);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            ship.moveY(ship.getShipY() - 5);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            ship.moveX(ship.getShipX() + 5);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            ship.moveX(ship.getShipX() - 5);
+        }
     }
 
     @Override
