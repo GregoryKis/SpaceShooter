@@ -20,6 +20,8 @@ public class Ship {
         this.textureRegion = textureRegion;
         height = 100;
         width = 100;
+        this.shipX = WIDTH / 2 - width / 2;
+        this.shipY = 0;
     }
 
     public void draw(Batch batch) {
@@ -34,19 +36,23 @@ public class Ship {
     public void moveY(float y) {
         if (shipY + y >= HEIGHT)//TOP
             this.setShipY(HEIGHT - height);
-        else if(shipY + y <= 0)//BOTTOM
-            this.setShipX(0);
+        else if (shipY + y <= 0)//BOTTOM
+            this.setShipY(0);
         else
             this.setShipY(shipY + y);
     }
 
     public void moveX(float x) {
-        if (shipX + x >= WIDTH)//RIGHT
+        if ((shipX + width) + x >= WIDTH)//RIGHT
             this.setShipX(WIDTH - width);
         else if (shipX + x <= 0)//LEFT
             this.setShipX(0);
         else
             this.setShipX(shipX + x);
+    }
+
+    public void shoot() {
+
     }
 
 

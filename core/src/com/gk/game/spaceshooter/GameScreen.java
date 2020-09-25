@@ -71,19 +71,19 @@ class GameScreen implements Screen {
 
     private void updateShipMovement(Ship ship) {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            ship.moveY(ship.getShipY() + 5);
+            ship.moveY(5);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            ship.moveY(ship.getShipY() - 5);
+            ship.moveY(-5);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            ship.moveX(ship.getShipX() + 5);
+            ship.moveX(5);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            ship.moveX(ship.getShipX() - 5);
+            ship.moveX(-5);
         }
     }
 
