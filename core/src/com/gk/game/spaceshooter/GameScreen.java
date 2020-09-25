@@ -5,12 +5,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.LinkedList;
 
 class GameScreen implements Screen {
 
@@ -18,7 +19,7 @@ class GameScreen implements Screen {
     private Viewport viewport;
     //    private Texture background;
     private TextureAtlas textureAtlas;
-    private TextureRegion background, playerShipTR, playerShildTR, playerLazerTR, enemyShipTR, enemyShildTR, enemyLazerTR;
+    private TextureRegion background;
     private SpriteBatch batch;
 
     public static final float WIDTH = 1000;
@@ -32,6 +33,8 @@ class GameScreen implements Screen {
 
     private Ship ship;
 
+    private LinkedList<Laser> laserList;
+
     public GameScreen() {
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WIDTH, HEIGHT, camera);
@@ -43,6 +46,8 @@ class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         ship = new Ship(textureAtlas.findRegion("playerShip1_blue"));
+
+        laserList = new LinkedList<>();
     }
 
     @Override
@@ -64,9 +69,26 @@ class GameScreen implements Screen {
         batch.draw(background, X, Y + HEIGHT, WIDTH, HEIGHT);
 
         updateShipMovement(ship);
+        updateShipFire(ship);
         ship.draw(batch);
 
         batch.end();
+    }
+
+    private void updateShipFire(Ship ship) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            Laser laser = new Laser(textureAtlas.findRegion("laserBlue01"), ship.getShipX() + ship.getWidth() / 2, ship.getShipY() + ship.getHeight());
+            laserList.addFirst(laser);
+        }
+
+        while (!laserList.isEmpty() && laserList.getLast().isOutOfScreen()) {
+            laserList.removeLast();
+        }
+
+        for (Laser laser : laserList) {
+            laser.draw(batch);
+            laser.move();
+        }
     }
 
     private void updateShipMovement(Ship ship) {
