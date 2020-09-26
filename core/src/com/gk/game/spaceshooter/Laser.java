@@ -2,34 +2,32 @@ package com.gk.game.spaceshooter;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Laser {
 
     private TextureRegion textureRegion;
 
-    private float height;
-    private float width;
-    private float laserX;
-    private float laserY;
+    private Rectangle shape;
 
     public Laser(TextureRegion textureRegion, float laserX, float laserY) {
         this.textureRegion = textureRegion;
-        this.height = 20;
-        this.width = 5;
-        this.laserX = laserX;
-        this.laserY = laserY;
+        float height = 20;
+        float width = 5;
+
+        shape = new Rectangle(laserX, laserY, width, height);
     }
 
-    public void draw(Batch batch){
-        batch.draw(textureRegion, laserX, laserY, width, height);
+    public void draw(Batch batch) {
+        batch.draw(textureRegion, shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
     }
 
-    public void move(){
-        laserY += 7;
+    public void move() {
+        shape.setY(shape.getY() + 7);
     }
 
-    public boolean isOutOfScreen(){
-        if (laserY > GameScreen.HEIGHT)
+    public boolean isOutOfScreen() {
+        if (shape.getY() > GameScreen.HEIGHT)
             return true;
         return false;
     }

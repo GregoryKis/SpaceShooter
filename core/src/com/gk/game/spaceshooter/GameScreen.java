@@ -76,7 +76,7 @@ class GameScreen implements Screen {
     }
 
     private void updateShipFire(Ship ship) {
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && ship.isCanFire()) {
             Laser laser = new Laser(textureAtlas.findRegion("laserBlue01"), ship.getShipX() + ship.getWidth() / 2, ship.getShipY() + ship.getHeight());
             laserList.addFirst(laser);
         }
@@ -93,19 +93,19 @@ class GameScreen implements Screen {
 
     private void updateShipMovement(Ship ship) {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            ship.moveY(5);
+            ship.moveUp(5);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            ship.moveY(-5);
+            ship.moveUp(-5);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            ship.moveX(5);
+            ship.moveRight(5);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            ship.moveX(-5);
+            ship.moveRight(-5);
         }
     }
 

@@ -2,6 +2,7 @@ package com.gk.game.spaceshooter;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 import static com.gk.game.spaceshooter.GameScreen.HEIGHT;
 import static com.gk.game.spaceshooter.GameScreen.WIDTH;
@@ -10,73 +11,82 @@ public class Ship {
 
     private TextureRegion textureRegion;
 
-    private float shipX;
-    private float shipY;
-    private float height;
-    private float width;
+    private float fireRate;
+    private float sinceLastFire;
 
+    private Rectangle shape;
 
     public Ship(TextureRegion textureRegion) {
         this.textureRegion = textureRegion;
-        height = 100;
-        width = 100;
-        this.shipX = WIDTH / 2 - width / 2;
-        this.shipY = 0;
+
+        float width = 100;
+        float height = 100;
+
+        float x = WIDTH / 2 - width / 2;
+        float y = 0;
+        shape = new Rectangle(x, y, width, height);
+
+        fireRate = 100;
+        sinceLastFire = 0;
     }
 
     public void draw(Batch batch) {
-        batch.draw(textureRegion, shipX, shipY, width, height);
+        batch.draw(textureRegion, shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
     }
 
     public void updateLocation(float x, float y) {
-        shipX = x;
-        shipY = y;
+        shape.setPosition(x, y);
     }
 
-    public void moveY(float y) {
-        if (shipY + y >= HEIGHT)//TOP
-            this.setShipY(HEIGHT - height);
-        else if (shipY + y <= 0)//BOTTOM
-            this.setShipY(0);
+    public void moveUp(float y) {
+        if (shape.getY() + y >= HEIGHT)//TOP
+            this.setShipY(HEIGHT - shape.getHeight());
+        else if (shape.getY() + y <= 0)//BOTTOM
+            shape.setY(0);
         else
-            this.setShipY(shipY + y);
+            shape.setY(shape.getY() + y);
     }
 
-    public void moveX(float x) {
-        if ((shipX + width) + x >= WIDTH)//RIGHT
-            this.setShipX(WIDTH - width);
-        else if (shipX + x <= 0)//LEFT
-            this.setShipX(0);
+    public void moveRight(float x) {
+        if (shape.getX() + shape.getWidth() + x >= WIDTH)//RIGHT
+            shape.setX(WIDTH - shape.getWidth());
+        else if (shape.getX() + x <= 0)//LEFT
+            shape.setX(0);
         else
-            this.setShipX(shipX + x);
+            shape.setX(shape.getX() + x);
     }
 
-    public void shoot() {
-
+    public boolean isCanFire() {
+        if (sinceLastFire == 0) {
+            sinceLastFire += fireRate;
+            return true;
+        }
+        --sinceLastFire;
+        return false;
     }
 
 
     public float getShipX() {
-        return shipX;
+        return shape.getX();
     }
 
     public float getShipY() {
-        return shipY;
+        return shape.getY();
     }
 
     public void setShipX(float shipX) {
-        this.shipX = shipX;
+        shape.setX(shipX);
     }
 
     public void setShipY(float shipY) {
-        this.shipY = shipY;
+        shape.setY(shipY);
     }
 
     public float getHeight() {
-        return height;
+        return shape.getHeight();
     }
 
     public float getWidth() {
-        return width;
+        return shape.getWidth();
     }
 }
