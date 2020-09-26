@@ -11,7 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 class GameScreen implements Screen {
 
@@ -31,7 +33,10 @@ class GameScreen implements Screen {
     private static float X = 0;
     private static float Y = 0;
 
-    private Ship ship;
+    private Ship playerShip;
+
+    private LinkedList<Ship> enemyShips;
+    private float enemyShipCreationInterval;
 
     private LinkedList<Laser> laserList;
 
@@ -45,7 +50,10 @@ class GameScreen implements Screen {
 
         batch = new SpriteBatch();
 
-        ship = new Ship(textureAtlas.findRegion("playerShip1_blue"));
+        playerShip = new Ship(textureAtlas.findRegion("playerShip1_blue"));
+
+        enemyShips = new LinkedList<>();
+        enemyShipCreationInterval = 100;
 
         laserList = new LinkedList<>();
     }
@@ -68,15 +76,41 @@ class GameScreen implements Screen {
         batch.draw(background, X, Y, WIDTH, HEIGHT);
         batch.draw(background, X, Y + HEIGHT, WIDTH, HEIGHT);
 
-        updateShipMovement(ship);
-        updateShipFire(ship);
-        ship.draw(batch);
+        updateShipMovement(playerShip);
+        updateShipFire(playerShip);
+        playerShip.draw(batch);
+
+        updateEnemyShips();
 
         batch.end();
     }
 
+    private void updateEnemyShips() {
+        --enemyShipCreationInterval;
+
+        if (enemyShipCreationInterval <= 0) {
+            enemyShipCreationInterval = 100;
+            Ship enemy = new Ship(textureAtlas.findRegion("enemyRed3"), WIDTH / 2, HEIGHT);//TODO factory
+            enemyShips.addFirst(enemy);
+        }
+
+        while (!enemyShips.isEmpty() && enemyShips.getLast().isOutOfScreen())
+            enemyShips.removeLast();
+
+
+        for (Ship s : enemyShips) {
+            s.checkHit(laserList);
+            if (s.isDead()) {
+                continue;//TODO do i need to remove? it will be removed when it is out of frame
+            }
+            s.setShipY(s.getShipY() - 5);//TODO change
+            s.draw(batch);
+        }
+
+    }
+
     private void updateShipFire(Ship ship) {
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && ship.isCanFire()) {
+        if (ship.isCanFire() && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             Laser laser = new Laser(textureAtlas.findRegion("laserBlue01"), ship.getShipX() + ship.getWidth() / 2, ship.getShipY() + ship.getHeight());
             laserList.addFirst(laser);
         }
@@ -86,6 +120,9 @@ class GameScreen implements Screen {
         }
 
         for (Laser laser : laserList) {
+            if (laser.isDestroyed()) {
+                continue;//TODO do i need to remove? it will be removed when it is out of frame
+            }
             laser.draw(batch);
             laser.move();
         }

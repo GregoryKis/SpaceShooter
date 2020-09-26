@@ -10,6 +10,8 @@ public class Laser {
 
     private Rectangle shape;
 
+    private boolean isDestroyed;
+
     public Laser(TextureRegion textureRegion, float laserX, float laserY) {
         this.textureRegion = textureRegion;
         float height = 20;
@@ -30,5 +32,17 @@ public class Laser {
         if (shape.getY() > GameScreen.HEIGHT)
             return true;
         return false;
+    }
+
+    public void hit(){
+        isDestroyed = true;
+    }
+
+    public Rectangle getShape(){
+        return shape;
+    }
+
+    public boolean isDestroyed(){
+        return isDestroyed;
     }
 }

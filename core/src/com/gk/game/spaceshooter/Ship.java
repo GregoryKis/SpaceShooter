@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.List;
+
 import static com.gk.game.spaceshooter.GameScreen.HEIGHT;
 import static com.gk.game.spaceshooter.GameScreen.WIDTH;
 
@@ -11,10 +13,12 @@ public class Ship {
 
     private TextureRegion textureRegion;
 
-    private float fireRate;
-    private float sinceLastFire;
+    private float fireRate = 20;
+    private float sinceLastFire = 0;
 
     private Rectangle shape;
+
+    private boolean isHit;
 
     public Ship(TextureRegion textureRegion) {
         this.textureRegion = textureRegion;
@@ -25,10 +29,22 @@ public class Ship {
         float x = WIDTH / 2 - width / 2;
         float y = 0;
         shape = new Rectangle(x, y, width, height);
-
-        fireRate = 100;
-        sinceLastFire = 0;
     }
+
+    public Ship(TextureRegion textureRegion, float x, float y) {
+        this.textureRegion = textureRegion;
+
+        float width = 100;
+        float height = 100;
+
+        shape = new Rectangle(x, y, width, height);
+    }
+
+    public Ship(TextureRegion textureRegion, float x, float y, float width, float height) {
+        this.textureRegion = textureRegion;
+        shape = new Rectangle(x, y, width, height);
+    }
+
 
     public void draw(Batch batch) {
         batch.draw(textureRegion, shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
@@ -65,6 +81,20 @@ public class Ship {
         return false;
     }
 
+    public boolean isOutOfScreen() {
+        if (shape.getY() < -shape.getHeight())
+            return true;
+        return false;
+    }
+
+    public void checkHit(List<Laser> lasers) {
+        for (Laser laser : lasers) {
+            if (shape.overlaps(laser.getShape())) {
+                isHit = true;
+                laser.hit();
+            }
+        }
+    }
 
     public float getShipX() {
         return shape.getX();
@@ -88,5 +118,13 @@ public class Ship {
 
     public float getWidth() {
         return shape.getWidth();
+    }
+
+    public Rectangle getShape() {
+        return shape;
+    }
+
+    public boolean isDead() {
+        return isHit;
     }
 }
