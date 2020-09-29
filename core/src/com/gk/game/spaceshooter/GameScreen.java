@@ -121,10 +121,10 @@ class GameScreen implements Screen {
 
         for (Laser laser : laserList) {
             if (laser.isDestroyed()) {
-                continue;//TODO do i need to remove? it will be removed when it is out of frame
+                laser.move(HEIGHT);
             }
             laser.draw(batch);
-            laser.move();
+            laser.move(7);
         }
     }
 

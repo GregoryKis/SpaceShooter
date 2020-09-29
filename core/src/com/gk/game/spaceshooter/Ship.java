@@ -89,7 +89,7 @@ public class Ship {
 
     public void checkHit(List<Laser> lasers) {
         for (Laser laser : lasers) {
-            if (shape.overlaps(laser.getShape())) {
+            if (shape.overlaps(laser.getShape()) && !laser.isDestroyed()) {
                 isHit = true;
                 laser.hit();
             }

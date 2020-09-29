@@ -24,8 +24,8 @@ public class Laser {
         batch.draw(textureRegion, shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
     }
 
-    public void move() {
-        shape.setY(shape.getY() + 7);
+    public void move(float moveBy) {
+        shape.setY(shape.getY() + moveBy);
     }
 
     public boolean isOutOfScreen() {
