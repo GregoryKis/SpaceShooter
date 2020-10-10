@@ -12,8 +12,11 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import sun.security.provider.SHA;
 
 class GameScreen implements Screen {
 
@@ -67,14 +70,7 @@ class GameScreen implements Screen {
     public void render(float delta) {
         batch.begin();
 
-        if (Y + HEIGHT <= 0) {
-            Y = 0;
-        } else {
-            Y -= background.getRegionHeight() / 10;
-        }
-
-        batch.draw(background, X, Y, WIDTH, HEIGHT);
-        batch.draw(background, X, Y + HEIGHT, WIDTH, HEIGHT);
+        drawBackground();
 
         updateShipMovement(playerShip);
         updateShipFire(playerShip);
@@ -83,6 +79,17 @@ class GameScreen implements Screen {
         updateEnemyShips();
 
         batch.end();
+    }
+
+    private void drawBackground() {
+        if (Y + HEIGHT <= 0) {
+            Y = 0;
+        } else {
+            Y -= background.getRegionHeight() / 10;
+        }
+
+        batch.draw(background, X, Y, WIDTH, HEIGHT);
+        batch.draw(background, X, Y + HEIGHT, WIDTH, HEIGHT);
     }
 
     private void updateEnemyShips() {
@@ -94,37 +101,37 @@ class GameScreen implements Screen {
             enemyShips.addFirst(enemy);
         }
 
-        while (!enemyShips.isEmpty() && enemyShips.getLast().isOutOfScreen())
-            enemyShips.removeLast();
-
-
-        for (Ship s : enemyShips) {
-            s.checkHit(laserList);
-            if (s.isDead()) {
-                continue;//TODO do i need to remove? it will be removed when it is out of frame
+        Iterator<Ship> shipIterator = enemyShips.iterator();
+        while (shipIterator.hasNext()){
+            Ship ship = shipIterator.next();
+            ship.checkHit(laserList);
+            if (ship.isDead()) {
+                shipIterator.remove();
+                continue;
             }
-            s.setShipY(s.getShipY() - 5);//TODO change
-            s.draw(batch);
+
+            ship.setShipY(ship.getShipY() - 5);//TODO change
+            ship.draw(batch);
         }
 
     }
 
     private void updateShipFire(Ship ship) {
-        if (ship.isCanFire() && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+//        if (ship.isCanFire() && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        if (ship.isCanFire()) {
             Laser laser = new Laser(textureAtlas.findRegion("laserBlue01"), ship.getShipX() + ship.getWidth() / 2, ship.getShipY() + ship.getHeight());
             laserList.addFirst(laser);
         }
 
-        while (!laserList.isEmpty() && laserList.getLast().isOutOfScreen()) {
-            laserList.removeLast();
-        }
-
-        for (Laser laser : laserList) {
-            if (laser.isDestroyed()) {
-                laser.move(HEIGHT);
+        Iterator<Laser> laserIterator = laserList.iterator();
+        while (laserIterator.hasNext()){
+            Laser next = laserIterator.next();
+            if (next.isDestroyed() || next.isOutOfScreen()) {
+                laserIterator.remove();
+                continue;
             }
-            laser.draw(batch);
-            laser.move(7);
+            next.draw(batch);
+            next.move(5);
         }
     }
 

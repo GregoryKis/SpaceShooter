@@ -74,7 +74,7 @@ public class Ship {
 
     public boolean isCanFire() {
         if (sinceLastFire == 0) {
-            sinceLastFire += fireRate;
+            sinceLastFire = fireRate;
             return true;
         }
         --sinceLastFire;
@@ -89,7 +89,7 @@ public class Ship {
 
     public void checkHit(List<Laser> lasers) {
         for (Laser laser : lasers) {
-            if (shape.overlaps(laser.getShape()) && !laser.isDestroyed()) {
+            if (shape.overlaps(laser.getShape())) {
                 isHit = true;
                 laser.hit();
             }
