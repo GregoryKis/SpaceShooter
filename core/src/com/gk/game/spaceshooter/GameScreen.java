@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,14 +16,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
-import sun.security.provider.SHA;
 
 class GameScreen implements Screen {
 
     private Camera camera;
     private Viewport viewport;
-    //    private Texture background;
+
+    private Texture explosionTexture;
     private TextureAtlas textureAtlas;
     private TextureRegion background;
     private SpriteBatch batch;
@@ -43,6 +45,10 @@ class GameScreen implements Screen {
 
     private LinkedList<Laser> laserList;
 
+    private List<Explosion> explosionList;
+
+    private Random random = new Random();
+
     public GameScreen() {
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WIDTH, HEIGHT, camera);
@@ -50,6 +56,9 @@ class GameScreen implements Screen {
         textureAtlas = new TextureAtlas("texture2.atlas");
 
         background = textureAtlas.findRegion("purple");
+
+        explosionTexture = new Texture("exp2.png");
+        explosionList = new LinkedList<>();
 
         batch = new SpriteBatch();
 
@@ -78,6 +87,8 @@ class GameScreen implements Screen {
 
         updateEnemyShips();
 
+        updateExplosions(delta);
+
         batch.end();
     }
 
@@ -97,23 +108,39 @@ class GameScreen implements Screen {
 
         if (enemyShipCreationInterval <= 0) {
             enemyShipCreationInterval = 100;
-            Ship enemy = new Ship(textureAtlas.findRegion("enemyRed3"), WIDTH / 2, HEIGHT);//TODO factory
+            Ship enemy = new Ship(textureAtlas.findRegion("enemyRed3"), random.nextInt((int) (WIDTH - Ship.WIDTH)), HEIGHT);//TODO factory
             enemyShips.addFirst(enemy);
         }
 
         Iterator<Ship> shipIterator = enemyShips.iterator();
-        while (shipIterator.hasNext()){
+        while (shipIterator.hasNext()) {
             Ship ship = shipIterator.next();
             ship.checkHit(laserList);
             if (ship.isDead()) {
+                explosionList.add(new Explosion(explosionTexture, ship.getShipX(), ship.getShipY(), ship.getWidth(), ship.getHeight()));
                 shipIterator.remove();
                 continue;
             }
 
-            ship.setShipY(ship.getShipY() - 5);//TODO change
+            ship.setShipY(ship.getShipY() - 2);//TODO change
             ship.draw(batch);
         }
 
+    }
+
+    private void updateExplosions(float delta) {
+        Iterator<Explosion> iterator = explosionList.iterator();
+        while (iterator.hasNext()) {
+            Explosion explosion = iterator.next();
+
+            if (explosion.isFinished()) {
+                iterator.remove();
+                continue;
+            }
+
+            explosion.update(delta);
+            explosion.draw(batch);
+        }
     }
 
     private void updateShipFire(Ship ship) {
@@ -124,7 +151,7 @@ class GameScreen implements Screen {
         }
 
         Iterator<Laser> laserIterator = laserList.iterator();
-        while (laserIterator.hasNext()){
+        while (laserIterator.hasNext()) {
             Laser next = laserIterator.next();
             if (next.isDestroyed() || next.isOutOfScreen()) {
                 laserIterator.remove();

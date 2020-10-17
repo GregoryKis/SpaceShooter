@@ -6,10 +6,11 @@ import com.badlogic.gdx.math.Rectangle;
 
 import java.util.List;
 
-import static com.gk.game.spaceshooter.GameScreen.HEIGHT;
-import static com.gk.game.spaceshooter.GameScreen.WIDTH;
 
 public class Ship {
+
+    public static float WIDTH = 100;
+    public static float HEIGHT = 100;
 
     private TextureRegion textureRegion;
 
@@ -23,12 +24,9 @@ public class Ship {
     public Ship(TextureRegion textureRegion) {
         this.textureRegion = textureRegion;
 
-        float width = 100;
-        float height = 100;
-
-        float x = WIDTH / 2 - width / 2;
+        float x = GameScreen.WIDTH / 2 - WIDTH / 2;
         float y = 0;
-        shape = new Rectangle(x, y, width, height);
+        shape = new Rectangle(x, y, WIDTH, HEIGHT);
     }
 
     public Ship(TextureRegion textureRegion, float x, float y) {
@@ -55,8 +53,8 @@ public class Ship {
     }
 
     public void moveUp(float y) {
-        if (shape.getY() + y >= HEIGHT)//TOP
-            this.setShipY(HEIGHT - shape.getHeight());
+        if (shape.getY() + y >= GameScreen.HEIGHT)//TOP
+            this.setShipY(GameScreen.HEIGHT - shape.getHeight());
         else if (shape.getY() + y <= 0)//BOTTOM
             shape.setY(0);
         else
@@ -64,8 +62,8 @@ public class Ship {
     }
 
     public void moveRight(float x) {
-        if (shape.getX() + shape.getWidth() + x >= WIDTH)//RIGHT
-            shape.setX(WIDTH - shape.getWidth());
+        if (shape.getX() + shape.getWidth() + x >= GameScreen.WIDTH)//RIGHT
+            shape.setX(GameScreen.WIDTH - shape.getWidth());
         else if (shape.getX() + x <= 0)//LEFT
             shape.setX(0);
         else
