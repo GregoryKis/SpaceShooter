@@ -20,6 +20,7 @@ public class Ship {
     private Rectangle shape;
 
     private boolean isHit;
+    private float hitPoints = 100;
 
     public Ship(TextureRegion textureRegion) {
         this.textureRegion = textureRegion;
@@ -88,7 +89,7 @@ public class Ship {
     public void checkHit(List<Laser> lasers) {
         for (Laser laser : lasers) {
             if (shape.overlaps(laser.getShape())) {
-                isHit = true;
+                takeDmg(laser);
                 laser.hit();
             }
         }
@@ -123,6 +124,10 @@ public class Ship {
     }
 
     public boolean isDead() {
-        return isHit;
+        return hitPoints <= 0;
+    }
+
+    private void takeDmg(Laser laser) {
+        hitPoints -= laser.getHitAmount();
     }
 }

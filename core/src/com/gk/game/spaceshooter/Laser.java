@@ -12,10 +12,14 @@ public class Laser {
 
     private boolean isDestroyed;
 
+    private float hitAmount;
+
     public Laser(TextureRegion textureRegion, float laserX, float laserY) {
         this.textureRegion = textureRegion;
         float height = 20;
         float width = 5;
+
+        hitAmount = 50;
 
         shape = new Rectangle(laserX, laserY, width, height);
     }
@@ -34,15 +38,19 @@ public class Laser {
         return false;
     }
 
-    public void hit(){
+    public void hit() {
         isDestroyed = true;
     }
 
-    public Rectangle getShape(){
+    public Rectangle getShape() {
         return shape;
     }
 
-    public boolean isDestroyed(){
+    public boolean isDestroyed() {
         return isDestroyed;
+    }
+
+    public float getHitAmount() {
+        return hitAmount;
     }
 }
