@@ -4,18 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 
@@ -49,6 +53,10 @@ class GameScreen implements Screen {
 
     private Random random = new Random();
 
+    private BitmapFont font;
+    private float hudVerticalMaegin, hudLeftX, hudRightX, hudCenterX, hudRow1Y, hudRow2Y, hudSectionWidth;
+    private int score = 0;
+
     public GameScreen() {
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WIDTH, HEIGHT, camera);
@@ -68,6 +76,8 @@ class GameScreen implements Screen {
         enemyShipCreationInterval = 100;
 
         laserList = new LinkedList<>();
+
+        prepareHUD();
     }
 
     @Override
@@ -89,7 +99,39 @@ class GameScreen implements Screen {
 
         updateExplosions(delta);
 
+        updateAndRenderHud();
+
         batch.end();
+    }
+
+    private void updateAndRenderHud() {
+        font.draw(batch, "score", hudLeftX, hudRow1Y, hudSectionWidth, Align.left, false);
+
+        font.draw(batch, String.format(Locale.getDefault(), "%06d", score), hudLeftX, hudRow1Y, hudSectionWidth, Align.left, false);
+    }
+
+    private void prepareHUD() {
+
+
+        FreeTypeFontGenerator freeTypeFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("EdgeOfTheGalaxyItalic-ZVJB3.otf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        fontParameter.size = 72;
+        fontParameter.borderWidth = 3.6f;
+        fontParameter.color = Color.GOLD;
+        fontParameter.borderColor = Color.BLACK;
+
+        font = freeTypeFontGenerator.generateFont(fontParameter);
+
+        font.getData().setScale(0.8f);
+
+        hudVerticalMaegin = font.getCapHeight() / 2;
+        hudLeftX = hudVerticalMaegin;
+        hudRightX = WIDTH * 2 / 3 - hudLeftX;
+        hudCenterX = WIDTH / 3;
+        hudRow1Y = HEIGHT - hudVerticalMaegin;
+        hudRow2Y = hudRow1Y - hudVerticalMaegin - font.getCapHeight();
+        hudSectionWidth = WIDTH / 3;
     }
 
     private void drawBackground() {
@@ -117,6 +159,7 @@ class GameScreen implements Screen {
             Ship ship = shipIterator.next();
             ship.checkHit(laserList);
             if (ship.isDead()) {
+                score++;
                 explosionList.add(new Explosion(explosionTexture, ship.getShipX(), ship.getShipY(), ship.getWidth(), ship.getHeight()));
                 shipIterator.remove();
                 continue;
